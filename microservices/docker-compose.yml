@@ -1,0 +1,60 @@
+version: "3"
+services:
+  rabbitmq:
+    image: "rabbitmq:management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - "rabbitmq_data:/data"
+
+  portainer:
+    image: portainer/portainer
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    ports:
+      - 9000:9000
+      - 8000:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: animals
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: mysecretpassword
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: aaltork@unibz.it
+      PGADMIN_DEFAULT_PASSWORD: mysecretpassword
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+  producer:
+    image: producer
+    
+
+  consumer:
+    image: consumer
+    
+    
+
+volumes:
+  rabbitmq_data:
+  portainer_data:
+  db-data:
+  pgadmin-data:
